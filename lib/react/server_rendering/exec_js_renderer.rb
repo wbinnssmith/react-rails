@@ -7,15 +7,17 @@ module React
     class ExecJSRenderer
       def initialize(options={})
         js_code = options[:code] || raise("Pass `code:` option to instantiate a JS context!")
-        @context = ExecJS.compile(GLOBAL_WRAPPER + js_code)
+        @context = ::ExecJS.compile(GLOBAL_WRAPPER + js_code)
       end
 
       def render(component_name, props, prerender_options)
+        component_name = "_reactRailsComponents('./" + component_name + "')"
         render_function = prerender_options.fetch(:render_function, "renderToString")
         js_code = <<-JS
           (function () {
             #{before_render(component_name, props, prerender_options)}
-            var result = ReactDOMServer.#{render_function}(React.createElement(#{component_name}, #{props}));
+            var component = #{component_name}.default || #{component_name};
+            var result = ReactDOMServer.#{render_function}(React.createElement(component, #{props}));
             #{after_render(component_name, props, prerender_options)}
             return result;
           })()

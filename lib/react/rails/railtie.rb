@@ -4,11 +4,6 @@ module React
   module Rails
     class Railtie < ::Rails::Railtie
       config.react = ActiveSupport::OrderedOptions.new
-      # Sensible defaults. Can be overridden in application.rb
-      config.react.variant = (::Rails.env.production? ? :production : :development)
-      config.react.addons = false
-      config.react.jsx_transform_options = {}
-      config.react.jsx_transformer_class = nil # defaults to BabelTransformer
       # Server rendering:
       config.react.server_renderer_pool_size  = 1   # increase if you're on JRuby
       config.react.server_renderer_timeout    = 20  # seconds
@@ -24,10 +19,6 @@ module React
 
       # Include the react-rails view helper lazily
       initializer "react_rails.setup_view_helpers", group: :all do |app|
-
-        app.config.react.jsx_transformer_class ||= React::JSX::DEFAULT_TRANSFORMER
-        React::JSX.transformer_class = app.config.react.jsx_transformer_class
-        React::JSX.transform_options = app.config.react.jsx_transform_options
 
         app.config.react.view_helper_implementation ||= React::Rails::ComponentMount
         React::Rails::ViewHelper.helper_implementation_class = app.config.react.view_helper_implementation
@@ -48,27 +39,6 @@ module React
           render_options = options.merge(inline: html)
           render(render_options)
         end
-      end
-
-      initializer "react_rails.bust_cache", group: :all do |app|
-        asset_variant = React::Rails::AssetVariant.new({
-          variant: app.config.react.variant,
-          addons: app.config.react.addons,
-        })
-
-        sprockets_env = app.assets || app.config.assets # sprockets-rails 3.x attaches this at a different config
-        sprockets_env.version = [sprockets_env.version, "react-#{asset_variant.react_build}",].compact.join('-')
-
-      end
-
-      initializer "react_rails.set_variant", after: :engines_blank_point, group: :all do |app|
-        asset_variant = React::Rails::AssetVariant.new({
-          variant: app.config.react.variant,
-          addons: app.config.react.addons,
-        })
-
-        app.config.assets.paths << asset_variant.react_directory
-        app.config.assets.paths << asset_variant.jsx_directory
       end
 
       config.after_initialize do |app|

@@ -1,3 +1,5 @@
+require 'open-uri'
+
 # Extends ExecJSRenderer for the Rails environment
 # - builds JS code out of the asset pipeline
 # - stringifies props
@@ -7,11 +9,16 @@ module React
     class SprocketsRenderer < ExecJSRenderer
       def initialize(options={})
         @replay_console = options.fetch(:replay_console, true)
-        filenames = options.fetch(:files, ["react-server.js", "components.js"])
+        filenames = options.fetch(:files, ["assets/webpack/react-rails-components.bundle.js"])
         js_code = CONSOLE_POLYFILL.dup
 
         filenames.each do |filename|
-          js_code << ::Rails.application.assets[filename].to_s
+          # don't eval random js from the network outside of dev for obvious reasons
+          if filename.start_with?('http') && ENV['RAILS_ENV'] == 'development'
+            js_code << open(filename) { |f| f.read }
+          else
+            js_code << File.read(::Rails.root.join('public', filename))
+          end
         end
 
         super(options.merge(code: js_code))

@@ -8,6 +8,37 @@
 
 #### Bug Fixes
 
+## 1.5.0 (November 25, 2015)
+
+#### Breaking Changes
+
+#### New Features
+
+- Update to React 0.14.3 #412
+- `config.react.camelize_props = true` will camelize `react_component` prop keys #409
+
+#### Deprecation
+
+#### Bug Fixes
+
+- Fix chained `.es6` file names with JSX processor #411
+- Don't insert `// =require`s multiple times #398
+
+## 1.4.2 (November 5, 2015)
+
+#### Breaking Changes
+
+#### New Features
+
+- Component generator `--coffee` option #387
+- Support Sprockets 4 with a JSX processor #385
+
+#### Deprecation
+
+#### Bug Fixes
+
+- Support custom attributes when rendering from controller #384
+
 ## 1.4.1 (October 23, 2015)
 
 #### Breaking Changes

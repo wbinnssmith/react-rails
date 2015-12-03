@@ -26,7 +26,7 @@ Just getting started with React? Make sure to check out the [Getting Started] (h
 Add `react-rails` to your gemfile:
 
 ```ruby
-gem 'react-rails', '~> 1.4.0'
+gem 'react-rails', '~> 1.5.0'
 ```
 
 Next, run the installation script:
@@ -205,6 +205,14 @@ end
 - On MRI, use `therubyracer` for the best performance (see [discussion](https://github.com/reactjs/react-rails/pull/290))
 - On MRI, you'll get a deadlock with `pool_size` > 1
 - If you're using JRuby, you can increase `pool_size` to have real multi-threaded rendering.
+
+You can configure camelize_props option and pass props with an underscored hash from rails but get a camelized hash in jsx :
+
+```ruby
+MyApp::Application.configure do
+  config.react.camelize_props = true #default false
+end
+```
 
 ### Rendering components instead of views
 
